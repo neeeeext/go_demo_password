@@ -1,4 +1,4 @@
-package main
+package account
 
 import (
 	"errors"
@@ -18,7 +18,7 @@ type account struct {
 	Url      string
 }
 
-func newAccount(login, password, urlString string) (*account, error) {
+func NewAccount(login, password, urlString string) (*account, error) {
 	if login == "" {
 		return nil, errors.New("INVALID_URL")
 
@@ -41,7 +41,7 @@ func newAccount(login, password, urlString string) (*account, error) {
 
 //Method
 
-func (a *account) outputAccount() {
+func (a *account) OutputAccount() {
 	fmt.Println(a.Login, a.Password, a.Url)
 }
 
@@ -60,11 +60,4 @@ func (a *account) generatePassword() {
 
 	a.Password = string(password)
 	fmt.Println("Ваш пароль сгенирован и записан")
-}
-
-func printData(promt string) string {
-	fmt.Println(promt)
-	var res string
-	fmt.Scanln(&res)
-	return res
 }
