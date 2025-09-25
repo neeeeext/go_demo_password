@@ -12,13 +12,13 @@ var letter = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456
 
 //Struct
 
-type account struct {
+type Account struct {
 	Login    string
 	Password string
 	Url      string
 }
 
-func NewAccount(login, password, urlString string) (*account, error) {
+func NewAccount(login, password, urlString string) (*Account, error) {
 	if login == "" {
 		return nil, errors.New("INVALID_URL")
 
@@ -28,7 +28,7 @@ func NewAccount(login, password, urlString string) (*account, error) {
 		return nil, errors.New("INVALID_URL")
 	}
 
-	newAccount := &account{
+	newAccount := &Account{
 		Login:    login,
 		Password: password,
 		Url:      urlString,
@@ -41,11 +41,11 @@ func NewAccount(login, password, urlString string) (*account, error) {
 
 //Method
 
-func (a *account) OutputAccount() {
+func (a *Account) OutputAccount() {
 	fmt.Println(a.Login, a.Password, a.Url)
 }
 
-func (a *account) generatePassword() {
+func (a *Account) generatePassword() {
 
 	fmt.Println("Введите сколько знаков в пароле хотите")
 	var rndNumber int
