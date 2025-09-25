@@ -62,8 +62,8 @@ func (a *account) generatePassword() {
 	fmt.Println("Ваш пароль сгенирован и записан")
 }
 
-//Main
-
+// Main
+// test
 // 1. Если логина нет, то ошибка
 // 2. Если нет пароля, то генерим
 func main() {
