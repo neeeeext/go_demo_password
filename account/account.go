@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"net/url"
+
+	"github.com/fatih/color"
 )
 
 // const
@@ -42,7 +44,9 @@ func NewAccount(login, password, urlString string) (*Account, error) {
 //Method
 
 func (a *Account) OutputAccount() {
-	fmt.Println(a.Login, a.Password, a.Url)
+	color.Red(a.Login)
+	color.Yellow(a.Password)
+	color.Green(a.Url)
 }
 
 func (a *Account) generatePassword() {
