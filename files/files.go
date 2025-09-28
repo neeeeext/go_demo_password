@@ -21,5 +21,10 @@ func WriteFile(content string, name string) {
 }
 
 func ReadFile() {
-
+	data, err := os.ReadFile("dabdab.txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(data))
 }

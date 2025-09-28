@@ -7,8 +7,9 @@ import (
 )
 
 func main() {
-
+	files.ReadFile()
 	files.WriteFile("Одаб", "dabdab.txt")
+
 	login := printData("Введите свой логин")
 
 	var password string
@@ -25,7 +26,6 @@ func main() {
 	}
 
 	account.OutputAccount()
-	files.ReadFile()
 
 }
 
