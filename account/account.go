@@ -1,6 +1,7 @@
 package account
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand/v2"
@@ -15,9 +16,9 @@ var letter = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456
 //Struct
 
 type Account struct {
-	Login    string
-	Password string
-	Url      string
+	Login    string `json: "login"`
+	Password string `json: "password"`
+	Url      string `json: "url"`
 }
 
 func NewAccount(login, password, urlString string) (*Account, error) {
@@ -38,10 +39,19 @@ func NewAccount(login, password, urlString string) (*Account, error) {
 	if password == "" {
 		newAccount.generatePassword()
 	}
+
 	return newAccount, nil
+
 }
 
-//Method
+// Method
+func (acc *Account) ToBytes() ([]byte, error) {
+	file, err := json.Marshal(acc)
+	if err != nil {
+		return nil, err
+	}
+	return file, err
+}
 
 func (a *Account) OutputAccount() {
 	color.Red(a.Login)

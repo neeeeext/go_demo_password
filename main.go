@@ -7,8 +7,27 @@ import (
 )
 
 func main() {
-	files.ReadFile()
-	files.WriteFile("Одаб", "dabdab.txt")
+cycle:
+	for {
+		fmt.Println("Выберите что вы хотите сделать: ")
+		menu()
+		var chouseUser int
+		fmt.Scan(&chouseUser)
+
+		switch chouseUser {
+		case 1:
+			createAccount()
+		case 2:
+			//
+		case 3:
+			//
+		case 4:
+			break cycle
+		}
+	}
+}
+
+func createAccount() {
 
 	login := printData("Введите свой логин")
 
@@ -27,6 +46,12 @@ func main() {
 
 	account.OutputAccount()
 
+	file, err := account.ToBytes()
+	if err != nil {
+		fmt.Println("Не удалось преобразовать файл в JSON")
+		return
+	}
+	files.WriteFile(file, "data.json")
 }
 
 func printData(promt string) string {
@@ -34,4 +59,11 @@ func printData(promt string) string {
 	var res string
 	fmt.Scanln(&res)
 	return res
+}
+
+func menu() {
+	fmt.Println("1. Создать аккаунт")
+	fmt.Println("2. Найти аккаунт")
+	fmt.Println("3. Удалить аккаунт")
+	fmt.Println("4. Выход")
 }
