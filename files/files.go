@@ -20,11 +20,10 @@ func WriteFile(content []byte, name string) {
 	fmt.Println("Запись успешна")
 }
 
-func ReadFile() {
-	data, err := os.ReadFile("dabdab.txt")
+func ReadFile(name string) ([]byte, error) {
+	data, err := os.ReadFile(name)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return nil, err
 	}
-	fmt.Println(string(data))
+	return data, err
 }

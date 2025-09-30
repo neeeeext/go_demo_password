@@ -2,32 +2,53 @@ package main
 
 import (
 	"app/account"
-	"app/files"
 	"fmt"
+
+	"github.com/fatih/color"
 )
 
 func main() {
-cycle:
+	vault := account.NewVault()
+Menu:
 	for {
-		fmt.Println("Выберите что вы хотите сделать: ")
-		menu()
-		var chouseUser int
-		fmt.Scan(&chouseUser)
+		chouseUser := menu()
 
 		switch chouseUser {
 		case 1:
-			createAccount()
+			createAccount(vault)
 		case 2:
-			//
+			findAccount(vault)
 		case 3:
-			//
-		case 4:
-			break cycle
+			deleteAccount(vault)
+		default:
+			break Menu
 		}
 	}
 }
+func findAccount(vault *account.Vault) {
+	findUrl := printData("Введите url по которому хотите найти пароль")
 
-func createAccount() {
+	isTrueAccounts := vault.FindAccountsByUrl(findUrl)
+	if len(isTrueAccounts) == 0 {
+		color.Red("Нужный аккаунт не найден!")
+	}
+	for _, account := range isTrueAccounts {
+		account.OutputAccount()
+		fmt.Println("")
+	}
+
+}
+func deleteAccount(vault *account.Vault) {
+	findUrl := printData("Введите url по которому хотите найти пароль")
+	isDeleted := vault.DeleteAccountByUrl(findUrl)
+	if isDeleted {
+		color.Green("Удалено")
+	} else {
+		color.Red("Не найдено")
+	}
+}
+
+func createAccount(vault *account.Vault) {
 
 	login := printData("Введите свой логин")
 
@@ -37,21 +58,14 @@ func createAccount() {
 
 	url := printData("Введите свой url")
 
-	account, err := account.NewAccount(login, password, url)
-
+	myAccount, err := account.NewAccount(login, password, url)
 	if err != nil {
 		fmt.Println("Неверный формат URL или login!")
 		return
 	}
 
-	account.OutputAccount()
+	vault.AddAccount(*myAccount)
 
-	file, err := account.ToBytes()
-	if err != nil {
-		fmt.Println("Не удалось преобразовать файл в JSON")
-		return
-	}
-	files.WriteFile(file, "data.json")
 }
 
 func printData(promt string) string {
@@ -61,9 +75,15 @@ func printData(promt string) string {
 	return res
 }
 
-func menu() {
+func menu() int {
+	fmt.Println("Выберите что вы хотите сделать: ")
+	fmt.Println("")
 	fmt.Println("1. Создать аккаунт")
 	fmt.Println("2. Найти аккаунт")
 	fmt.Println("3. Удалить аккаунт")
 	fmt.Println("4. Выход")
+
+	var chouseUser int
+	fmt.Scan(&chouseUser)
+	return chouseUser
 }

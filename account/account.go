@@ -1,7 +1,6 @@
 package account
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand/v2"
@@ -45,12 +44,9 @@ func NewAccount(login, password, urlString string) (*Account, error) {
 }
 
 // Method
-func (acc *Account) ToBytes() ([]byte, error) {
-	file, err := json.Marshal(acc)
-	if err != nil {
-		return nil, err
-	}
-	return file, err
+
+func (a *Account) DeleteAccount() {
+	
 }
 
 func (a *Account) OutputAccount() {
