@@ -13,14 +13,20 @@ func main() {
 	vault := account.NewVault(files.NewJsonDb("data.json"))
 Menu:
 	for {
-		chouseUser := menu()
+		variant := printData([]string{
+			"1. Создать аккаунт",
+			"2. Найти аккаунт",
+			"3. Удалить аккаунт",
+			"4. Выход",
+			"Выберите что вы хотите сделать: ",
+		})
 
-		switch chouseUser {
-		case 1:
+		switch variant {
+		case "1":
 			createAccount(vault)
-		case 2:
+		case "2":
 			findAccount(vault)
-		case 3:
+		case "3":
 			deleteAccount(vault)
 		default:
 			break Menu
@@ -28,7 +34,7 @@ Menu:
 	}
 }
 func findAccount(vault *account.VaultWithDb) {
-	findUrl := printData("Введите url по которому хотите найти пароль")
+	findUrl := printData([]string{"Введите url по которому хотите найти пароль"})
 
 	isTrueAccounts := vault.FindAccountsByUrl(findUrl)
 	if len(isTrueAccounts) == 0 {
@@ -41,7 +47,7 @@ func findAccount(vault *account.VaultWithDb) {
 
 }
 func deleteAccount(vault *account.VaultWithDb) {
-	findUrl := printData("Введите url по которому хотите найти пароль")
+	findUrl := printData([]string{"Введите url по которому хотите найти пароль"})
 	isDeleted := vault.DeleteAccountByUrl(findUrl)
 	if isDeleted {
 		color.Green("Удалено")
@@ -52,13 +58,13 @@ func deleteAccount(vault *account.VaultWithDb) {
 
 func createAccount(vault *account.VaultWithDb) {
 
-	login := printData("Введите свой логин")
+	login := printData([]string{"Введите свой логин"})
 
 	var password string
 	fmt.Println("Введите свой пароль")
 	fmt.Scanln(&password)
 
-	url := printData("Введите свой url")
+	url := printData([]string{"Введите свой url"})
 
 	myAccount, err := account.NewAccount(login, password, url)
 	if err != nil {
@@ -70,22 +76,17 @@ func createAccount(vault *account.VaultWithDb) {
 
 }
 
-func printData(promt string) string {
-	fmt.Println(promt)
+func printData[T any](promt []T) string {
+	for i, line := range promt {
+		if i == len(promt)-1 {
+			fmt.Printf("%v :", line)
+
+		} else {
+			fmt.Println(line)
+		}
+
+	}
 	var res string
 	fmt.Scanln(&res)
 	return res
-}
-
-func menu() int {
-	fmt.Println("Выберите что вы хотите сделать: ")
-	fmt.Println("")
-	fmt.Println("1. Создать аккаунт")
-	fmt.Println("2. Найти аккаунт")
-	fmt.Println("3. Удалить аккаунт")
-	fmt.Println("4. Выход")
-
-	var chouseUser int
-	fmt.Scan(&chouseUser)
-	return chouseUser
 }

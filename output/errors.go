@@ -21,3 +21,20 @@ func PrintError(value any) {
 		color.Red("Неизвестная ошибка")
 	}
 }
+
+//Generic
+
+// func sum[T int | string](a, b T) T {
+// 	switch d := any(a).(type) {
+// 	case string:
+// 		fmt.Println(d)
+// 	}
+// 	return a + b
+// }
+
+// type List[T any] struct {
+// 	elements []T
+// }
+
+// func (l *List[T]) addElement() {
+// }
