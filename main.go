@@ -2,13 +2,14 @@ package main
 
 import (
 	"app/account"
+	"app/files"
 	"fmt"
 
 	"github.com/fatih/color"
 )
 
 func main() {
-	vault := account.NewVault()
+	vault := account.NewVault(files.NewJsonDb("data.json"))
 Menu:
 	for {
 		chouseUser := menu()
@@ -25,7 +26,7 @@ Menu:
 		}
 	}
 }
-func findAccount(vault *account.Vault) {
+func findAccount(vault *account.VaultWithDb) {
 	findUrl := printData("Введите url по которому хотите найти пароль")
 
 	isTrueAccounts := vault.FindAccountsByUrl(findUrl)
@@ -38,7 +39,7 @@ func findAccount(vault *account.Vault) {
 	}
 
 }
-func deleteAccount(vault *account.Vault) {
+func deleteAccount(vault *account.VaultWithDb) {
 	findUrl := printData("Введите url по которому хотите найти пароль")
 	isDeleted := vault.DeleteAccountByUrl(findUrl)
 	if isDeleted {
@@ -48,7 +49,7 @@ func deleteAccount(vault *account.Vault) {
 	}
 }
 
-func createAccount(vault *account.Vault) {
+func createAccount(vault *account.VaultWithDb) {
 
 	login := printData("Введите свой логин")
 

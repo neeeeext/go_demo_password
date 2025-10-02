@@ -1,7 +1,6 @@
 package account
 
 import (
-	"app/files"
 	"encoding/json"
 	"strings"
 	"time"
@@ -9,32 +8,58 @@ import (
 	"github.com/fatih/color"
 )
 
+type ByteReader interface {
+	Read() ([]byte, error)
+}
+
+type ByteWriter interface {
+	Write([]byte)
+}
+type Db interface {
+	ByteReader
+	ByteWriter
+}
+
 type Vault struct {
 	Accounts []Account `json: "accounts"`
 	UpdateAt time.Time `json: "updateAt"`
 }
 
-func NewVault() *Vault {
-	file, err := files.ReadFile("data.json")
+type VaultWithDb struct {
+	Vault
+	db Db
+}
+
+func NewVault(db Db) *VaultWithDb {
+	file, err := db.Read()
 	if err != nil {
-		return &Vault{
-			Accounts: []Account{},
-			UpdateAt: time.Now(),
+		return &VaultWithDb{
+			Vault: Vault{
+				Accounts: []Account{},
+				UpdateAt: time.Now(),
+			},
+			db: db,
 		}
 	}
 	var vault Vault
 	err = json.Unmarshal(file, &vault)
 	if err != nil {
 		color.Red("Не удалось разобрать файл data.json")
-		return &Vault{
-			Accounts: []Account{},
-			UpdateAt: time.Now(),
+		return &VaultWithDb{
+			Vault: Vault{
+				Accounts: []Account{},
+				UpdateAt: time.Now(),
+			},
+			db: db,
 		}
 	}
-	return &vault
+	return &VaultWithDb{
+		Vault: vault,
+		db:    db,
+	}
 }
 
-func (vault *Vault) DeleteAccountByUrl(findUrl string) bool {
+func (vault *VaultWithDb) DeleteAccountByUrl(findUrl string) bool {
 	var accounts []Account
 	isDeleted := false
 	for _, account := range vault.Accounts {
@@ -45,11 +70,11 @@ func (vault *Vault) DeleteAccountByUrl(findUrl string) bool {
 		}
 		isDeleted = true
 	}
-	vault.save(accounts)
+	vault.save()
 	return isDeleted
 }
 
-func (vault *Vault) FindAccountsByUrl(findUrl string) []Account {
+func (vault *VaultWithDb) FindAccountsByUrl(findUrl string) []Account {
 	var accounts []Account
 	for _, account := range vault.Accounts {
 		isMatched := strings.Contains(account.Url, findUrl)
@@ -60,9 +85,9 @@ func (vault *Vault) FindAccountsByUrl(findUrl string) []Account {
 	return accounts
 }
 
-func (vault *Vault) AddAccount(acc Account) {
+func (vault *VaultWithDb) AddAccount(acc Account) {
 	vault.Accounts = append(vault.Accounts, acc)
-	vault.save(vault.Accounts)
+	vault.save()
 }
 
 func (acc *Vault) ToBytes() ([]byte, error) {
@@ -73,12 +98,11 @@ func (acc *Vault) ToBytes() ([]byte, error) {
 	return file, err
 }
 
-func (vault *Vault) save(accounts []Account) {
-	vault.Accounts = accounts
+func (vault *VaultWithDb) save() {
 	vault.UpdateAt = time.Now()
-	data, err := vault.ToBytes()
+	data, err := vault.Vault.ToBytes()
 	if err != nil {
 		color.Red("Не удалось преобразовать")
 	}
-	files.WriteFile(data, "data.json")
+	vault.db.Write(data)
 }
