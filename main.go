@@ -3,6 +3,7 @@ package main
 import (
 	"app/account"
 	"app/files"
+	"app/output"
 	"fmt"
 
 	"github.com/fatih/color"
@@ -31,7 +32,7 @@ func findAccount(vault *account.VaultWithDb) {
 
 	isTrueAccounts := vault.FindAccountsByUrl(findUrl)
 	if len(isTrueAccounts) == 0 {
-		color.Red("Нужный аккаунт не найден!")
+		output.PrintError("Нужный аккаунт не найден!")
 	}
 	for _, account := range isTrueAccounts {
 		account.OutputAccount()
@@ -45,7 +46,7 @@ func deleteAccount(vault *account.VaultWithDb) {
 	if isDeleted {
 		color.Green("Удалено")
 	} else {
-		color.Red("Не найдено")
+		output.PrintError("Не найдено")
 	}
 }
 
