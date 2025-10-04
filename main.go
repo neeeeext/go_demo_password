@@ -5,9 +5,11 @@ import (
 	"app/files"
 	"app/output"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/joho/godotenv"
 )
 
 var menu = map[string]func(*account.VaultWithDb){
@@ -18,6 +20,19 @@ var menu = map[string]func(*account.VaultWithDb){
 }
 
 func main() {
+	res := os.Getenv("VAR")
+	fmt.Println(res)
+
+	err := godotenv.Load()
+	if err != nil {
+		output.PrintError("Не удалось загрузить env файл")
+	}
+
+	for _, e := range os.Environ() {
+		pair := strings.SplitN(e, "=", 2)
+		fmt.Println(pair[0])
+	}
+
 	vault := account.NewVault(files.NewJsonDb("data.json"))
 Menu:
 	for {
