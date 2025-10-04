@@ -3,6 +3,8 @@ package files
 import (
 	"fmt"
 	"os"
+
+	"github.com/fatih/color"
 )
 
 type JsonDb struct {
@@ -27,7 +29,8 @@ func (db *JsonDb) Write(content []byte) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Запись успешна")
+	color.Blue("Запись успешна")
+
 }
 
 func (db *JsonDb) Read() ([]byte, error) {
