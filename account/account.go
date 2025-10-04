@@ -46,11 +46,11 @@ func NewAccount(login, password, urlString string) (*Account, error) {
 // Method
 
 func (a *Account) DeleteAccount() {
-	
+
 }
 
 func (a *Account) OutputAccount() {
-	color.Red(a.Login)
+	color.HiRed(a.Login)
 	color.Yellow(a.Password)
 	color.Green(a.Url)
 }

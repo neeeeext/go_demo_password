@@ -5,6 +5,7 @@ import (
 	"app/files"
 	"app/output"
 	"fmt"
+	"strings"
 
 	"github.com/fatih/color"
 )
@@ -48,7 +49,7 @@ Menu:
 func findAccount(vault *account.VaultWithDb) {
 	findUrl := printData([]string{"Введите url по которому хотите найти пароль"})
 
-	isTrueAccounts := vault.FindAccountsByUrl(findUrl)
+	isTrueAccounts := vault.FindAccounts(findUrl, checkUrl)
 	if len(isTrueAccounts) == 0 {
 		output.PrintError("Нужный аккаунт не найден!")
 	}
@@ -58,6 +59,11 @@ func findAccount(vault *account.VaultWithDb) {
 	}
 
 }
+
+func checkUrl(acc account.Account, str string) bool {
+	return strings.Contains(acc.Url, str)
+}
+
 func deleteAccount(vault *account.VaultWithDb) {
 	findUrl := printData([]string{"Введите url по которому хотите найти пароль"})
 	isDeleted := vault.DeleteAccountByUrl(findUrl)
