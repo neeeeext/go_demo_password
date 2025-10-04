@@ -1,6 +1,7 @@
 package account
 
 import (
+	"app/encrypter"
 	"app/output"
 	"encoding/json"
 	"strings"
@@ -26,10 +27,11 @@ type Vault struct {
 
 type VaultWithDb struct {
 	Vault
-	db Db
+	db  Db
+	enc encrypter.Encrypter
 }
 
-func NewVault(db Db) *VaultWithDb {
+func NewVault(db Db, enc encrypter.Encrypter) *VaultWithDb {
 	file, err := db.Read()
 	if err != nil {
 		return &VaultWithDb{
@@ -37,7 +39,8 @@ func NewVault(db Db) *VaultWithDb {
 				Accounts: []Account{},
 				UpdateAt: time.Now(),
 			},
-			db: db,
+			db:  db,
+			enc: enc,
 		}
 	}
 	var vault Vault
@@ -50,12 +53,14 @@ func NewVault(db Db) *VaultWithDb {
 				Accounts: []Account{},
 				UpdateAt: time.Now(),
 			},
-			db: db,
+			db:  db,
+			enc: enc,
 		}
 	}
 	return &VaultWithDb{
 		Vault: vault,
 		db:    db,
+		enc:   enc,
 	}
 }
 
@@ -74,7 +79,7 @@ func (vault *VaultWithDb) DeleteAccountByUrl(findUrl string) bool {
 	return isDeleted
 }
 
-func (vault *VaultWithDb) FindAccounts(name string, cheker func(Account, string)bool) []Account {
+func (vault *VaultWithDb) FindAccounts(name string, cheker func(Account, string) bool) []Account {
 	var accounts []Account
 	for _, account := range vault.Accounts {
 		isMatched := cheker(account, name)

@@ -2,10 +2,10 @@ package main
 
 import (
 	"app/account"
+	"app/encrypter"
 	"app/files"
 	"app/output"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/fatih/color"
@@ -20,20 +20,18 @@ var menu = map[string]func(*account.VaultWithDb){
 }
 
 func main() {
-	res := os.Getenv("VAR")
-	fmt.Println(res)
 
 	err := godotenv.Load()
 	if err != nil {
 		output.PrintError("Не удалось загрузить env файл")
 	}
 
-	for _, e := range os.Environ() {
-		pair := strings.SplitN(e, "=", 2)
-		fmt.Println(pair[0])
-	}
+	// for _, e := range os.Environ() {
+	// 	pair := strings.SplitN(e, "=", 2)
+	// 	fmt.Println(pair[0])
+	// }
 
-	vault := account.NewVault(files.NewJsonDb("data.json"))
+	vault := account.NewVault(files.NewJsonDb("data.json"), *encrypter.NewEcrypter())
 Menu:
 	for {
 		variant := printData(
