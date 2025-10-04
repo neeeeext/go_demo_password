@@ -49,7 +49,10 @@ Menu:
 func findAccount(vault *account.VaultWithDb) {
 	findUrl := printData([]string{"Введите url по которому хотите найти пароль"})
 
-	isTrueAccounts := vault.FindAccounts(findUrl, checkUrl)
+	isTrueAccounts := vault.FindAccounts(findUrl, func(acc account.Account, str string) bool {
+		return strings.Contains(acc.Url, str)
+
+	})
 	if len(isTrueAccounts) == 0 {
 		output.PrintError("Нужный аккаунт не найден!")
 	}
@@ -58,10 +61,6 @@ func findAccount(vault *account.VaultWithDb) {
 		fmt.Println("")
 	}
 
-}
-
-func checkUrl(acc account.Account, str string) bool {
-	return strings.Contains(acc.Url, str)
 }
 
 func deleteAccount(vault *account.VaultWithDb) {
