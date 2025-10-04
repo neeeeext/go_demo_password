@@ -12,21 +12,23 @@ import (
 
 var menu = map[string]func(*account.VaultWithDb){
 	"1": createAccount,
-	"2": findAccount,
-	"3": deleteAccount,
+	"2": findAccountByUrl,
+	"3": findAccountByLogin,
+	"4": deleteAccount,
 }
 
 func main() {
 	vault := account.NewVault(files.NewJsonDb("data.json"))
 Menu:
 	for {
-		variant := printData([]string{
+		variant := printData(
 			"1. Создать аккаунт",
-			"2. Найти аккаунт",
-			"3. Удалить аккаунт",
-			"4. Выход",
+			"2. Найти аккаунт по URL",
+			"3. Найти аккаунт по Login",
+			"4. Удалить аккаунт",
+			"5. Выход",
 			"Выберите что вы хотите сделать: ",
-		})
+		)
 
 		menuFunc := menu[variant]
 		if menuFunc == nil {
@@ -46,25 +48,39 @@ Menu:
 		// }
 	}
 }
-func findAccount(vault *account.VaultWithDb) {
-	findUrl := printData([]string{"Введите url по которому хотите найти пароль"})
+func findAccountByUrl(vault *account.VaultWithDb) {
+	findUrl := printData("Введите url по которому хотите найти аккаунт")
 
 	isTrueAccounts := vault.FindAccounts(findUrl, func(acc account.Account, str string) bool {
 		return strings.Contains(acc.Url, str)
 
 	})
-	if len(isTrueAccounts) == 0 {
-		output.PrintError("Нужный аккаунт не найден!")
-	}
-	for _, account := range isTrueAccounts {
-		account.OutputAccount()
-		fmt.Println("")
-	}
+	findAccountOutput(&isTrueAccounts)
 
 }
 
+func findAccountByLogin(vault *account.VaultWithDb) {
+	findLogin := printData("Введите login по которому хотите найти аккаунт")
+
+	isTrueAccounts := vault.FindAccounts(findLogin, func(acc account.Account, str string) bool {
+		return strings.Contains(acc.Login, str)
+
+	})
+	findAccountOutput(&isTrueAccounts)
+}
+
+func findAccountOutput(a *[]account.Account) {
+	if len(*a) == 0 {
+		output.PrintError("Нужный аккаунт не найден!")
+	}
+	for _, account := range *a {
+		account.OutputAccount()
+		fmt.Println("")
+	}
+}
+
 func deleteAccount(vault *account.VaultWithDb) {
-	findUrl := printData([]string{"Введите url по которому хотите найти пароль"})
+	findUrl := printData("Введите url по которому хотите УДАЛИТЬ аккаунт")
 	isDeleted := vault.DeleteAccountByUrl(findUrl)
 	if isDeleted {
 		color.Green("Удалено")
@@ -75,7 +91,7 @@ func deleteAccount(vault *account.VaultWithDb) {
 
 func createAccount(vault *account.VaultWithDb) {
 
-	login := printData([]string{"Введите свой логин"})
+	login := printData("Введите свой логин")
 
 	var password string
 	fmt.Println("Введите свой пароль")
@@ -93,7 +109,7 @@ func createAccount(vault *account.VaultWithDb) {
 
 }
 
-func printData[T any](promt []T) string {
+func printData(promt ...any) string {
 	for i, line := range promt {
 		if i == len(promt)-1 {
 			fmt.Printf("%v :", line)
