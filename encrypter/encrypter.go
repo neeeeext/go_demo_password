@@ -4,8 +4,8 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha256"
 	"io"
-
 	"os"
 )
 
@@ -25,7 +25,7 @@ func NewEcrypter() *Encrypter {
 }
 
 func (enc *Encrypter) Encrypt(plainStr []byte) []byte {
-	block, err := aes.NewCipher([]byte(enc.Key))
+	block, err := aes.NewCipher(fixKey(enc.Key))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -42,7 +42,7 @@ func (enc *Encrypter) Encrypt(plainStr []byte) []byte {
 }
 
 func (enc *Encrypter) Decrypt(encryptedStr []byte) []byte {
-	block, err := aes.NewCipher([]byte(enc.Key))
+	block, err := aes.NewCipher(fixKey(enc.Key))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -57,4 +57,9 @@ func (enc *Encrypter) Decrypt(encryptedStr []byte) []byte {
 		panic(err.Error())
 	}
 	return plainText
+}
+
+func fixKey(key string) []byte {
+	hash := sha256.Sum256([]byte(key))
+	return hash[:]
 }

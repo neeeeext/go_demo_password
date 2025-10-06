@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 type ByteReader interface {
@@ -43,10 +45,14 @@ func NewVault(db Db, enc encrypter.Encrypter) *VaultWithDb {
 			enc: enc,
 		}
 	}
+
+	data := enc.Decrypt(file)
+
 	var vault Vault
-	err = json.Unmarshal(file, &vault)
+	err = json.Unmarshal(data, &vault)
+	color.Blue("Найдено %d аккаунтов", len(vault.Accounts))
 	if err != nil {
-		output.PrintError("Не удалось разобрать файл data.json")
+		output.PrintError("Не удалось разобрать файл data.vault")
 
 		return &VaultWithDb{
 			Vault: Vault{
@@ -64,11 +70,11 @@ func NewVault(db Db, enc encrypter.Encrypter) *VaultWithDb {
 	}
 }
 
-func (vault *VaultWithDb) DeleteAccountByUrl(findUrl string) bool {
+func (vault *VaultWithDb) DeleteAccountByUrl(url string) bool {
 	var accounts []Account
 	isDeleted := false
 	for _, account := range vault.Accounts {
-		isMatched := strings.Contains(account.Url, findUrl)
+		isMatched := strings.Contains(account.Url, url)
 		if !isMatched {
 			accounts = append(accounts, account)
 			continue
@@ -106,9 +112,10 @@ func (acc *Vault) ToBytes() ([]byte, error) {
 func (vault *VaultWithDb) save() {
 	vault.UpdateAt = time.Now()
 	data, err := vault.Vault.ToBytes()
+	encData := vault.enc.Encrypt(data)
 	if err != nil {
 		output.PrintError("Не удалось преобразовать")
 
 	}
-	vault.db.Write(data)
+	vault.db.Write(encData)
 }

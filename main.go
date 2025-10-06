@@ -31,7 +31,7 @@ func main() {
 	// 	fmt.Println(pair[0])
 	// }
 
-	vault := account.NewVault(files.NewJsonDb("data.json"), *encrypter.NewEcrypter())
+	vault := account.NewVault(files.NewJsonDb("data.vault"), *encrypter.NewEcrypter())
 Menu:
 	for {
 		variant := printData(
